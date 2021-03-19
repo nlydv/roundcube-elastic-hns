@@ -1,7 +1,7 @@
 /**
- * Roundcube webmail styles for the Elastic skin
+ * Roundcube Webmail styles for the Elastic skin
  *
- * Copyright (c) 2017-2018, The Roundcube Dev Team
+ * Copyright (c) The Roundcube Dev Team
  *
  * The contents are subject to the Creative Commons Attribution-ShareAlike
  * License. It is allowed to copy, distribute, transmit and to adapt the work
@@ -112,9 +112,11 @@
     span.secondary {
         color: @color-list-secondary;
     }
+}
 
-    // Focus indicator
-    @media screen and (min-width: @screen-width-large) {
+// Focus indicator
+html:not(.touch) {
+    .listing {
         li > a,
         tbody tr > td:first-child,
         &:not(.withselection) tbody tr > td.selection + td {
@@ -163,14 +165,28 @@ ul.listing {
             }
         }
 
-        input.icon-checkbox + label,
-        input[type=checkbox] {
+        .custom-switch {
             position: absolute;
             padding: 0;
             top: 0;
-            right: .5rem;
+            right: 0;
             height: @listing-line-height;
             vertical-align: middle;
+
+            .custom-control-label {
+                &:before,
+                &:after {
+                    margin-top: .4rem;
+
+                    html.touch & {
+                        margin-top: .75rem;
+                    }
+                }
+            }
+
+            html.touch & {
+                height: @listing-touch-line-height;
+            }
         }
     }
 
@@ -319,7 +335,7 @@ html.ie11 .listing.iconized li a:before {
         content: @fa-var-paper-plane;
     }
     &.addressbook > td.section:before {
-        content: @fa-var-user;
+        content: @fa-var-users;
     }
     &.folders > td.section:before {
         .font-icon-regular(@fa-var-folder);
@@ -332,6 +348,9 @@ html.ie11 .listing.iconized li a:before {
     }
     &.calendar > td.section:before {
         content: @fa-var-calendar;
+    }
+    &.chat > td.section:before {
+        content: @fa-var-comments;
     }
 }
 
@@ -349,11 +368,16 @@ html.ie11 .listing.iconized li a:before {
 .popupmenu .listing {
     li > a {
         border-left: 0;
+
+        &:not(.disabled):hover {
+            color: @color-menu-hover;
+            background-color: @color-menu-hover-background;
+        }
     }
 
     li.selected {
-        color: @color-toolbarmenu-hover;
-        background-color: @color-toolbarmenu-hover-background;
+        color: @color-menu-hover;
+        background-color: @color-menu-hover-background;
     }
 
     td {
@@ -369,11 +393,13 @@ ul.treelist {
             left: 0;
             width: @listing-treetoggle-width;
             cursor: pointer;
+            background-color: transparent;
 
             &:before {
                 &:extend(.font-icon-class);
                 content: @fa-var-angle-right;
                 margin-left: .25em;
+                font-size: 1em;
             }
 
             &.expanded:before {
@@ -446,14 +472,10 @@ ul.treelist {
     li {
         &.mailbox {
             &.unread {
-                // TODO
                 & > a {
                     padding-right: 2.8em;
+                    font-weight: bold;
                 }
-            }
-
-            &.recent {
-                color: @color-list-recent;
             }
 
             .unreadcount {
@@ -462,7 +484,7 @@ ul.treelist {
                 right: 0;
                 min-width: 2em;
                 line-height: 1.4rem;
-                margin: (@listing-line-height - 1.4rem)/2;
+                margin: (@listing-line-height - 1.4 * @page-font-size) / 2;
                 padding: 0 .3em;
                 border-radius: .4em;
                 background: @color-list-badge-background;
@@ -472,17 +494,19 @@ ul.treelist {
 
                 html.touch & {
                     line-height: 2rem;
-                    margin: (@listing-touch-line-height - 2rem)/2;
+                    margin: (@listing-touch-line-height - 2 * @page-font-size) / 2;
                 }
             }
 
-            &.selected .unreadcount {
-                // todo
-            }
+            &.recent {
+                & > a {
+                    color: @color-list-recent;
 
-            &.recent > .unreadcount {
-                background: @color-list-recent-badge-background;
-                color: @color-list-recent-badge;
+                    & > .unreadcount {
+                        background: @color-list-recent-badge-background;
+                        color: @color-list-recent-badge;
+                    }
+                }
             }
 
             &.root {
@@ -513,49 +537,16 @@ ul.treelist {
             .font-icon-solid(@fa-var-paper-plane);
         }
         &.junk a:before {
-            .font-icon-solid(@fa-var-fire);
+            .font-icon-solid(@fa-var-fire-alt);
         }
         &.archive > a:before {
             .font-icon-solid(@fa-var-archive);
         }
-
-        &.type-event > a:before {
-            .font-icon-solid(@fa-var-calendar);
-        }
-        &.type-task > a:before {
-            .font-icon-solid(@fa-var-tasks);
-        }
-        &.type-journal > a:before {
-            .font-icon-regular(@fa-var-calendar);
-        }
-        &.type-contact > a:before {
-            .font-icon-regular(@fa-var-address-book);
-        }
-        &.type-note > a:before {
-            .font-icon-regular(@fa-var-sticky-note);
-        }
-        &.type-configuration > a:before {
-            .font-icon-solid(@fa-var-cog);
-        }
-        &.type-freebusy > a:before {
-            .font-icon-regular(@fa-var-calendar);
-        }
-        &.type-file > a:before {
-            .font-icon-solid(@fa-var-folder);
-        }
     }
 
     // folder-selector fix for left padding
-    &.toolbarmenu a:before {
+    &.menu a:before {
         margin-left: .5em;
-    }
-
-    &.toolbarmenu {
-        li {
-            a:before {
-                margin-right: .25em;
-            }
-        }
     }
 }
 
@@ -659,53 +650,65 @@ table.fixedcopy {
         cursor: pointer;
         width: 1em;
     }
+
     tr.thread.expanded td.threads div:before {
         content: @fa-var-angle-down;
     }
-    td.subject span.msgicon.status:before {
-        &:extend(.font-icon-class);
-        content: @fa-var-circle;
-        cursor: pointer;
-        font-size: .4em;
-        width: 3em;
-        height: 2rem;
+
+    td.subject span.msgicon.status {
+        &:before {
+            &:extend(.font-icon-class);
+            content: @fa-var-circle;
+            cursor: pointer;
+            font-size: .4rem;
+            width: 1.1rem;
+            height: 2rem;
+        }
+
+        &.unread:before {
+            content: @fa-var-circle;
+            color: @color-list-unread-status;
+            font-size: .5rem;
+        }
+
+        &.unreadchildren:before {
+            .font-icon-regular(@fa-var-circle);
+            font-size: .5rem;
+        }
+
+        &.replied:before {
+            .font-icon-solid(@fa-var-reply);
+            font-size: 1rem;
+        }
+
+        &.forwarded:before {
+            .font-icon-solid(@fa-var-share);
+            font-size: 1rem;
+        }
+
+        &.replied.forwarded:before {
+            .font-icon-solid(@fa-var-reply);
+            font-size: 1rem;
+        }
+
+        &.replied.forwarded:after {
+            &:extend(.font-icon-class);
+            .font-icon-solid(@fa-var-share);
+            font-size: 1rem;
+            opacity: .5;
+            margin: 0 -0.1em 0 -1.25em;
+        }
     }
-    td.subject span.msgicon.status.unread:before {
-        content: @fa-var-star;
-        font-size: 1.1em;
-        width: 1.1em;
-        line-height: 1.75;
-        color: @color-warning;
-    }
-    td.subject span.msgicon.status.unreadchildren:before {
-        .font-icon-regular(@fa-var-star);
-        font-size: 1.1em;
-        width: 1.1em;
-        line-height: 1.75;
-    }
-    td.subject span.msgicon.status.replied:before {
-        content: @fa-var-reply;
-        font-size: 1.1em;
-        line-height: 1.75;
-        width: 1.1em;
-    }
-    td.subject span.msgicon.status.forwarded:before {
-        .font-icon-solid(@fa-var-share);
-        font-size: 1.1em;
-        line-height: 1.75;
-        width: 1.1em;
-    }
-    td.subject span.msgicon.status.replied.forwarded:before {
-        content: @fa-var-reply; // TODO
-        font-size: 1.1em;
-        line-height: 1.75;
-        width: 1.1em;
-    }
-    tr.deleted td.subject span.msgicon.status:before {
-        content: @fa-var-ban;
-        font-size: 1.1em;
-        line-height: 1.75;
-        width: 1.1em;
+
+    tr.deleted td.subject span.msgicon.status {
+        &:before {
+            .font-icon-solid(@fa-var-ban) !important;
+            font-size: 1rem;
+        }
+
+        &:after {
+            display: none !important;
+        }
     }
 
     span.attachment span {
@@ -732,21 +735,41 @@ table.fixedcopy {
         content: @fa-var-flag;
     }
 
+    tr.flaggedroot:not(:hover) span.unflagged:before {
+        &:extend(.font-icon-class);
+        content: @fa-var-flag;
+        color: @color-list-icon;
+    }
+
     tr:hover span.unflagged:before {
         &:extend(.font-icon-class);
         .font-icon-regular(@fa-var-flag);
     }
-
 }
 
+// On touch devices hide flag icon, but do it in a way
+// that saves as much room as possible, keeping the attachment icon
 html.layout-phone,
 html.touch {
     .messagelist {
+        tr {
+            position: relative;
+        }
         td.flags {
-            display: none;
+            top: .25rem;
+            right: 0;
+            bottom: 0;
+
+            .flag {
+                visibility: hidden;
+            }
         }
         td.subject {
             padding-right: .5em;
+
+            .subject {
+                padding-right: 1.5rem;
+            }
         }
     }
 }
@@ -810,17 +833,27 @@ html.touch {
     padding: 0;
     margin: 0;
 
+    background-color: @color-attachmentlist-background;
+    border: 1px solid @color-attachmentlist-border;
+
+    &:empty {
+        padding: 0;
+        border: 0;
+    }
+
     li {
         list-style: none;
         display: inline-flex;
         white-space: nowrap;
         line-height: @attachmentslist-item-height;
+        padding: 0 .25em;
         max-width: 100%;
 
         &:before {
             &:extend(.font-icon-class);
             .font-icon-regular(@fa-var-file);
             height: @attachmentslist-item-height;
+            margin: 0;
         }
 
         &.txt:before,
@@ -922,6 +955,11 @@ html.touch {
             content: @fa-var-trash-alt;
             line-height: @attachmentslist-item-height;
             height: @attachmentslist-item-height;
+            margin: 0;
+        }
+
+        a.dropdown:before {
+            margin: 0;
         }
 
         &.uploading:before {
@@ -932,6 +970,7 @@ html.touch {
         a.filename {
             display: flex;
             overflow: hidden;
+            padding: 0 .2em;
         }
 
         .attachment-name {
@@ -941,7 +980,22 @@ html.touch {
 
         .attachment-size {
             color: @color-list-secondary;
-            padding: 0 .25em;
+            padding-left: .25em;
+        }
+    }
+}
+
+.keylist {
+    padding: 0;
+    list-style: none;
+
+    li {
+        line-height: 2;
+
+        &:before {
+            &:extend(.font-icon-class);
+            content: @fa-var-key;
+            line-height: 1.5;
         }
     }
 }
@@ -971,5 +1025,11 @@ html.touch {
     td.name:before {
         &:extend(.font-icon-class);
         content: @fa-var-file-alt;
+    }
+}
+
+#subscription-table {
+    li.mailbox a {
+        padding-right: 2.5rem;
     }
 }

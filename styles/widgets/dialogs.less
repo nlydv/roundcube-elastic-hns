@@ -1,7 +1,7 @@
 /**
- * Roundcube webmail styles for the Elastic skin
+ * Roundcube Webmail styles for the Elastic skin
  *
- * Copyright (c) 2017-2018, The Roundcube Dev Team
+ * Copyright (c) The Roundcube Dev Team
  *
  * The contents are subject to the Creative Commons Attribution-ShareAlike
  * License. It is allowed to copy, distribute, transmit and to adapt the work
@@ -15,6 +15,7 @@
     display: none;
     padding: 0;
     min-width: 180px;
+    height: 100%;
 
     li > a {
         width: 100%;
@@ -22,7 +23,6 @@
 
     &.propform {
         overflow: hidden;
-        margin-top: 1rem;
         padding: .25rem; // so overflow do not truncate focus outline on inputs
     }
 
@@ -47,30 +47,34 @@
 
 .popover {
     box-shadow: 3px 3px 5px @color-popover-shadow;
+    border-color: @color-layout-border;
     padding: 0;
 
     .popover-header {
         // On mobile don't display popup arrows and titles
         display: none;
     }
-}
 
-#rcmKSearchpane {
-    width: auto;
-    max-width: none;
-    overflow: hidden;
+    @media screen and (min-width: (@screen-width-small + 1px)) {
+        .listing {
+            li:first-child {
+                border-radius: .25rem .25rem 0 0;
+            }
 
-    li {
-        padding-right: .5rem;
+            li:last-child {
+                border-radius: 0 0 .25rem .25rem;
+            }
+        }
     }
 }
 
 html.layout-small,
 html.layout-phone {
-    .popover {
+    .popover:not(.select-menu) {
         margin: 0 !important;
         padding: 0;
         right: 0;
+        left: initial !important;
         bottom: 0;
         top: 0;
         width: @layout-mobile-menu-width;
@@ -79,6 +83,7 @@ html.layout-phone {
         border: 0;
         display: flex;
         flex-direction: column;
+        box-shadow: none;
 
         div.arrow {
             display: none;
@@ -87,10 +92,6 @@ html.layout-phone {
         .listing li:last-child {
             border-bottom: 1px solid @color-list-border;
         }
-    }
-
-    .popover:not(#rcmKSearchpane) {
-        left: initial !important;
     }
 
     .popover-overlay {
@@ -102,22 +103,21 @@ html.layout-phone {
         width: 100%;
     }
 
-    #rcmKSearchpane {
-        bottom: auto;
-        border: 1px solid @color-input-border;
-        box-shadow: none;
-    }
-
     .popover-header {
         display: block;
         border-radius: 0;
         border: 0;
         padding: 0 .5em;
         height: @layout-touch-header-height;
+        min-height: @layout-touch-header-height; // for when it's a flex item
         line-height: @layout-touch-header-height;
         font-size: @layout-touch-header-font-size;
         color: @color-popover-mobile-header;
         background-color: @color-popover-mobile-header-background;
+
+        &:before {
+            display: none; // hide the Bootstrap's popover arrow element
+        }
 
         a {
             display: inline-block;
@@ -139,6 +139,41 @@ html.touch .popover {
 
             &:before {
                 float: left; // overwrite icon float to have unified element height
+            }
+        }
+    }
+}
+
+.select-menu {
+    max-width: initial;
+    margin: 0;
+    height: auto;
+
+    .popover-header {
+        border-radius: .25rem .25rem 0 0 !important;
+    }
+
+    .listing li {
+        a {
+            padding-left: .25rem;
+            outline: 0; // for Android browser
+        }
+
+        &:last-child {
+            border-bottom-right-radius: .25rem;
+            border-bottom-left-radius: .25rem;
+        }
+    }
+
+    // Use 'inline' class for menus that have a list elements with no <a> inside
+    // and no header
+    &.inline {
+        .listing li {
+            padding-right: .5rem;
+
+            &:first-child {
+                border-top-left-radius: .25rem;
+                border-top-right-radius: .25rem;
             }
         }
     }
@@ -214,7 +249,7 @@ html.touch .popover {
         right: 0;
     }
 
-    button[disabled] {
+    button:disabled {
         display: none;
     }
 }
