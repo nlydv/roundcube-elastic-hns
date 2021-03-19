@@ -1,3 +1,7 @@
+**NOTE: This is a fork of the original "Elastic" skin by [Roundcube](https://github.com/roundcube).**
+
+*See https://github.com/roundcube/elastic for the original*
+
 Roundcube Webmail Skin "Elastic"
 ================================
 
